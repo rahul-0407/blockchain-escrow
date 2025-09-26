@@ -43,6 +43,20 @@ contract TourismEscrow {
         return bookingCount;
     }
 
+    function markDelivered(uint256 _bookingId) external{
+        Booking storage booking = bookings[_bookingId];
+        require(msg.sender==booking.provider,"Not authorised")
+        require(booking.status == Status.Pending, "Booking not pending");
+
+        booking.status = Status.Delivered;
+
+        (bool success, ) = payable(booking.provider).call{value:booking.amount}("");
+        require(success, "Payment failed");
+        
+        emit PaymentReleased(_bookingId, booking.provider, booking.amount);
+        emit ServiceDelivered(_bookingId);
+    }
+
     function getBooking(uint256 _bookingId) external view returns (Booking memory) {
         return bookings[_bookingId];
     }
