@@ -52,9 +52,22 @@ contract TourismEscrow {
 
         (bool success, ) = payable(booking.provider).call{value:booking.amount}("");
         require(success, "Payment failed");
-        
+
         emit PaymentReleased(_bookingId, booking.provider, booking.amount);
         emit ServiceDelivered(_bookingId);
+    }
+
+    function cancelBooking(uint256 _bookingId) external{
+        Booking storage booking = bookings[_bookingId];
+        require(msg.sender==booking.tourist,"Not authorised")
+        require(booking.status == Status.Pending, "Booking not pending");
+
+        booking.status = Status.Cancelled;
+
+        (bool success, ) = payable(booking.tourist).call{value:booking.amount}("");
+        require(success, "Payment failed");
+
+        emit BookingCancelled(_bookingId, booking.tourist);
     }
 
     function getBooking(uint256 _bookingId) external view returns (Booking memory) {
