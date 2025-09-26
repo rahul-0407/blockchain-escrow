@@ -1,0 +1,70 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+contract BookingEscrow {
+    enum Status { Pending, Completed, Cancelled }
+
+    struct Booking {
+        address tourist;
+        address provider;
+        uint256 amount;
+        Status status;
+    }
+
+    uint256 public bookingCount;
+    mapping(uint256 => Booking) public bookings;
+
+    event BookingCreated(uint256 bookingId, address tourist, address provider, uint256 amount);
+    event BookingCompleted(uint256 bookingId);
+    event BookingCancelled(uint256 bookingId);
+
+    // Tourist creates a booking and pays
+    function createBooking(address _provider) external payable {
+        require(msg.value > 0, "Payment required");
+
+        bookingCount++;
+        bookings[bookingCount] = Booking({
+            tourist: msg.sender,
+            provider: _provider,
+            amount: msg.value,
+            status: Status.Pending
+        });
+
+        emit BookingCreated(bookingCount, msg.sender, _provider, msg.value);
+    }
+
+    // Tourist confirms completion (can be changed to provider or admin confirmation)
+    function confirmCompletion(uint256 _bookingId) external {
+        Booking storage b = bookings[_bookingId];
+        require(msg.sender == b.tourist, "Only tourist can confirm");
+        require(b.status == Status.Pending, "Booking not pending");
+
+        b.status = Status.Completed;
+        payable(b.provider).transfer(b.amount);
+
+        emit BookingCompleted(_bookingId);
+    }
+
+    // Tourist can cancel before completion
+    function cancelBooking(uint256 _bookingId) external {
+        Booking storage b = bookings[_bookingId];
+        require(msg.sender == b.tourist, "Only tourist can cancel");
+        require(b.status == Status.Pending, "Booking not pending");
+
+        b.status = Status.Cancelled;
+        payable(b.tourist).transfer(b.amount);
+
+        emit BookingCancelled(_bookingId);
+    }
+
+    // Get booking details
+    function getBooking(uint256 _bookingId) external view returns (
+        address tourist,
+        address provider,
+        uint256 amount,
+        Status status
+    ) {
+        Booking memory b = bookings[_bookingId];
+        return (b.tourist, b.provider, b.amount, b.status);
+    }
+}
