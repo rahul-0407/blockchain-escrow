@@ -19,10 +19,10 @@ contract TourismEscrow {
     mapping(uint256 => Booking) public bookings;
 
     event BookingCreated(
-        uint256 bookingId,
+        uint256 indexed bookingId,
         address tourist,
         address provider,
-        uint256 amount
+        uint256 indexed amount
     );
     event ServiceDelivered(uint256 bookingId);
     event BookingCancelled(uint256 bookingId, address refundedTo);

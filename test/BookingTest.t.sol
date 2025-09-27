@@ -1,57 +1,51 @@
-// // SPDX-License-Identifier: MIT
-// pragma solidity ^0.8.20;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
 
-// import "forge-std/Test.sol";
-// import "../src/Booking.sol";
+import "forge-std/Test.sol";
+import "../src/Booking.sol";
 
-// contract BookingTest is Test {
-//     event BookingCreated(
-//         uint256 indexed bookingId,
-//         address tourist,
-//         address provider,
-//         uint256 amount
-//     );
-//     event BookingCompleted(uint256 indexed bookingId);
-//     event BookingCancelled(uint256 indexed bookingId);
+ contract BookingTest is Test {
+    event BookingCreated(
+        uint256 indexed bookingId,
+        address tourist,
+        address provider,
+        uint256 indexed amount
+    );
+    event BookingCompleted(uint256 indexed bookingId);
+    event BookingCancelled(uint256 indexed bookingId);
 
-//     Booking booking;
+    TourismEscrow booking;
 
-//     address public TOURIST = makeAddr("tourist");
-//     address public PROVIDER = makeAddr("provider");
+    address public TOURIST = makeAddr("tourist");
+    address public PROVIDER = makeAddr("provider");
 
-//     function setUp() public {
-//         booking = new Booking();
-//         vm.deal(TOURIST, 10 ether);
-//         vm.deal(PROVIDER, 1 ether);
-//     }
+    function setUp() public {
+        booking = new TourismEscrow();
+        vm.deal(TOURIST, 10 ether);
+        vm.deal(PROVIDER, 1 ether);
+    }
 
-//     // ------------------- CREATE BOOKING -------------------
-//     function testCreateBookingEmitsEvent() public {
-//         vm.prank(TOURIST);
+    function testCreateBookinngEmitEvent() public {
+        vm.prank(TOURIST);
 
-//         vm.expectEmit(true, true, true, true);
-//         emit BookingCreated(1, TOURIST, PROVIDER, 1 ether);
+        vm.expectEmit(true,true,false,true);
+        emit BookingCreated(1,TOURIST,PROVIDER, 1 ether);
 
-//         booking.createBooking{value: 1 ether}(PROVIDER);
+        booking.createBooking{value:1 ether}(PROVIDER);
 
-//         (
-//             address tourist,
-//             address provider,
-//             uint256 amount,
-//             Booking.Status status
-//         ) = booking.getBooking(1);
+        TourismEscrow.Booking memory b = booking.getBooking(1);
 
-//         assertEq(tourist, TOURIST);
-//         assertEq(provider, PROVIDER);
-//         assertEq(amount, 1 ether);
-//         assertEq(uint(status), uint(Booking.Status.Completed));
-//     }
+        assertEq(b.tourist, TOURIST);
+        assertEq(b.provider, PROVIDER);
+        assertEq(b.amount, 1 ether);
+        assertEq(uint(b.status), uint(TourismEscrow.Status.Pending));
+    }
 
-//     function testCreateBookingRevertsIfNoPayment() public {
-//         vm.prank(TOURIST);
-//         vm.expectRevert("Payment required");
-//         booking.createBooking{value: 0}(PROVIDER);
-//     }
+    function testCreateBookingRevertsIfNoPayment() public {
+        vm.prank(TOURIST);
+        vm.expectRevert("Payment must be > 0");
+        booking.createBooking{value: 0}(PROVIDER);
+    }
 
 //     // ------------------- CONFIRM COMPLETION -------------------
 //     // function testConfirmCompletionSuccess() public {
@@ -154,4 +148,4 @@
 //         assertEq(amount, 2 ether);
 //         assertEq(uint(status), uint(Booking.Status.Completed));
 //     }
-// }
+ }
