@@ -10,7 +10,7 @@ contract DeployBooking is Script {
         HelperConfig helper = new HelperConfig();
         HelperConfig.NetworkConfig memory config = helper.getConfig();
 
-        address owner = block.chainid == 31337? msg.sender: config.contractOwner;
+        address owner = block.chainid == 31337 ? msg.sender : config.contractOwner;
 
         vm.startBroadcast();
         TourismEscrow escrow = new TourismEscrow();
