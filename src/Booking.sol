@@ -24,7 +24,7 @@ contract TourismEscrow {
         address provider,
         uint256 indexed amount
     );
-    event ServiceDelivered(uint256 bookingId);
+    event ServiceDelivered(uint256 indexed bookingId);
     event BookingCancelled(uint256 bookingId, address refundedTo);
     event PaymentReleased(uint256 bookingId, address to, uint256 amount);
 

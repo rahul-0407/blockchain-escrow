@@ -11,6 +11,7 @@ import "../src/Booking.sol";
         address provider,
         uint256 indexed amount
     );
+    event ServiceDelivered(uint256 indexed bookingId);
     event BookingCompleted(uint256 indexed bookingId);
     event BookingCancelled(uint256 indexed bookingId);
 
@@ -47,48 +48,47 @@ import "../src/Booking.sol";
         booking.createBooking{value: 0}(PROVIDER);
     }
 
-//     // ------------------- CONFIRM COMPLETION -------------------
-//     // function testConfirmCompletionSuccess() public {
-//     //     // Tourist books
-//     //     vm.prank(TOURIST);
-//     //     booking.createBooking{value: 1 ether}(PROVIDER);
+    function testConfirmCompletionSuccess() public {
+        vm.prank(TOURIST);
+        booking.createBooking{value: 1 ether}(PROVIDER);
 
-//     //     uint256 providerBalanceBefore = PROVIDER.balance;
+        uint providerBalanceBefore = PROVIDER.balance;
+        vm.prank(PROVIDER);
+        vm.expectEmit(true,false,false,true);
+        emit ServiceDelivered(1);
 
-//     //     // Tourist confirms completion
-//     //     vm.prank(TOURIST);
-//     //     vm.expectEmit(true, false, false, true);
-//     //     emit BookingCompleted(1);
+        booking.markDelivered(1);
 
-//     //     booking.confirmCompletion(1);
+        TourismEscrow.Booking memory b = booking.getBooking(1);
+        assertEq(uint(b.status), uint(TourismEscrow.Status.Delivered));
 
-//     //     (, , , Booking.Status status) = booking.getBooking(1);
-//     //     assertEq(uint(status), uint(Booking.Status.Completed));
+        assertEq(PROVIDER.balance, providerBalanceBefore + 1 ether);
 
-//     //     assertEq(PROVIDER.balance, providerBalanceBefore + 1 ether);
-//     // }
+    }
 
-//     // function testConfirmCompletionRevertsIfNotTourist() public {
-//     //     vm.prank(TOURIST);
-//     //     booking.createBooking{value: 1 ether}(PROVIDER);
 
-//     //     vm.prank(PROVIDER);
-//     //     vm.expectRevert("Only tourist can confirm");
-//     //     booking.confirmCompletion(1);
-//     // }
 
-//     // function testConfirmCompletionRevertsIfNotPending() public {
-//     //     vm.prank(TOURIST);
-//     //     booking.createBooking{value: 1 ether}(PROVIDER);
+    function testmarkDeliveredRevertsIfNotPending() public {
+        vm.prank(TOURIST);
+        booking.createBooking{value: 1 ether}(PROVIDER);
 
-//     //     // Tourist cancels first
-//     //     vm.prank(TOURIST);
-//     //     booking.cancelBooking(1);
+        // Tourist cancels first
+        vm.prank(TOURIST);
+        booking.cancelBooking(1);
 
-//     //     vm.prank(TOURIST);
-//     //     vm.expectRevert("Booking not pending");
-//     //     booking.confirmCompletion(1);
-//     // }
+        vm.prank(PROVIDER);
+        vm.expectRevert("Booking not pending");
+        booking.markDelivered(1);
+    }
+
+    function testmarkDeliveredRevertIfNotProvider() public {
+        vm.prank(TOURIST);
+        booking.createBooking{value: 1 ether}(PROVIDER);
+
+        vm.prank(TOURIST);
+        vm.expectRevert("Not authorised");
+        booking.markDelivered(1);
+    }
 
 //     // ------------------- CANCEL BOOKING -------------------
 //     // function testCancelBookingSuccess() public {
@@ -109,27 +109,26 @@ import "../src/Booking.sol";
 //     //     assertEq(TOURIST.balance, touristBalanceBefore + 1 ether);
 //     // }
 
-//     // function testCancelBookingRevertsIfNotTourist() public {
-//     //     vm.prank(TOURIST);
-//     //     booking.createBooking{value: 1 ether}(PROVIDER);
+    function testCancelBookingRevertsIfNotTourist() public {
+        vm.prank(TOURIST);
+        booking.createBooking{value: 1 ether}(PROVIDER);
 
-//     //     vm.prank(PROVIDER);
-//     //     vm.expectRevert("Only tourist can cancel");
-//     //     booking.cancelBooking(1);
-//     // }
+        vm.prank(PROVIDER);
+        vm.expectRevert("Not authorised");
+        booking.cancelBooking(1);
+    }
 
-//     // function testCancelBookingRevertsIfNotPending() public {
-//     //     vm.prank(TOURIST);
-//     //     booking.createBooking{value: 1 ether}(PROVIDER);
+    function testCancelBookingRevertsIfNotPending() public {
+        vm.prank(TOURIST);
+        booking.createBooking{value: 1 ether}(PROVIDER);
 
-//     //     // Confirm completion first
-//     //     vm.prank(TOURIST);
-//     //     booking.confirmCompletion(1);
+        vm.prank(PROVIDER);
+        booking.markDelivered(1);
 
-//     //     vm.prank(TOURIST);
-//     //     vm.expectRevert("Booking not pending");
-//     //     booking.cancelBooking(1);
-//     // }
+        vm.prank(TOURIST);
+        vm.expectRevert("Booking not pending");
+        booking.cancelBooking(1);
+    }
 
 //     // ------------------- GET BOOKING -------------------
 //     function testGetBookingReturnsCorrectDetails() public {
