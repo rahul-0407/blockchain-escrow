@@ -13,6 +13,7 @@ import "../src/Booking.sol";
     );
     event ServiceDelivered(uint256 indexed bookingId);
     event BookingCancelled(uint256 indexed bookingId, address refundedTo);
+    event PaymentReleased(uint256 indexed bookingId, address to, uint256 amount);
 
     TourismEscrow booking;
 
@@ -55,6 +56,24 @@ import "../src/Booking.sol";
         vm.prank(PROVIDER);
         vm.expectEmit(true,false,false,true);
         emit ServiceDelivered(1);
+
+        booking.markDelivered(1);
+
+        TourismEscrow.Booking memory b = booking.getBooking(1);
+        assertEq(uint(b.status), uint(TourismEscrow.Status.Delivered));
+
+        assertEq(PROVIDER.balance, providerBalanceBefore + 1 ether);
+
+    }
+
+    function testConfirmCompletionEmitEvent() public {
+        vm.prank(TOURIST);
+        booking.createBooking{value: 1 ether}(PROVIDER);
+
+        uint providerBalanceBefore = PROVIDER.balance;
+        vm.prank(PROVIDER);
+        vm.expectEmit(true,false,false,true);
+        emit PaymentReleased(1, PROVIDER, 1 ether);
 
         booking.markDelivered(1);
 
@@ -128,21 +147,16 @@ import "../src/Booking.sol";
         booking.cancelBooking(1);
     }
 
-//     // ------------------- GET BOOKING -------------------
-//     function testGetBookingReturnsCorrectDetails() public {
-//         vm.prank(TOURIST);
-//         booking.createBooking{value: 2 ether}(PROVIDER);
 
-//         (
-//             address tourist,
-//             address provider,
-//             uint256 amount,
-//             Booking.Status status
-//         ) = booking.getBooking(1);
+    function testGetBookingReturnsCorrectDetails() public {
+        vm.prank(TOURIST);
+        booking.createBooking{value: 2 ether}(PROVIDER);
 
-//         assertEq(tourist, TOURIST);
-//         assertEq(provider, PROVIDER);
-//         assertEq(amount, 2 ether);
-//         assertEq(uint(status), uint(Booking.Status.Completed));
-//     }
+        TourismEscrow.Booking memory b = booking.getBooking(1);
+
+        assertEq(b.tourist, TOURIST);
+        assertEq(b.provider, PROVIDER);
+        assertEq(b.amount, 2 ether);
+        assertEq(uint(b.status), uint(TourismEscrow.Status.Pending));
+    }
  }
