@@ -4,7 +4,7 @@ pragma solidity ^0.8.20;
 import "forge-std/Test.sol";
 import "../src/Booking.sol";
 
- contract BookingTest is Test {
+contract BookingTest is Test {
     event BookingCreated(uint256 indexed bookingId, address tourist, address provider, uint256 indexed amount);
     event ServiceDelivered(uint256 indexed bookingId);
     event BookingCancelled(uint256 indexed bookingId, address refundedTo);
@@ -27,7 +27,7 @@ import "../src/Booking.sol";
         vm.expectEmit(true, true, false, true);
         emit BookingCreated(1, TOURIST, PROVIDER, 1 ether);
 
-        booking.createBooking{value:1 ether}(PROVIDER);
+        booking.createBooking{value: 1 ether}(PROVIDER);
 
         TourismEscrow.Booking memory b = booking.getBooking(1);
 
@@ -47,7 +47,7 @@ import "../src/Booking.sol";
         vm.prank(TOURIST);
         booking.createBooking{value: 1 ether}(PROVIDER);
 
-        uint providerBalanceBefore = PROVIDER.balance;
+        uint256 providerBalanceBefore = PROVIDER.balance;
         vm.prank(PROVIDER);
         vm.expectEmit(true, false, false, true);
         emit ServiceDelivered(1);
@@ -65,7 +65,7 @@ import "../src/Booking.sol";
         vm.prank(TOURIST);
         booking.createBooking{value: 1 ether}(PROVIDER);
 
-        uint providerBalanceBefore = PROVIDER.balance;
+        uint256 providerBalanceBefore = PROVIDER.balance;
         vm.prank(PROVIDER);
         vm.expectEmit(true, false, false, true);
         emit PaymentReleased(1, PROVIDER, 1 ether);
@@ -76,10 +76,7 @@ import "../src/Booking.sol";
         assertEq(uint256(b.status), uint256(TourismEscrow.Status.Delivered));
 
         assertEq(PROVIDER.balance, providerBalanceBefore + 1 ether);
-
     }
-
-
 
     function testmarkDeliveredRevertsIfNotPending() public {
         vm.prank(TOURIST);
@@ -141,7 +138,6 @@ import "../src/Booking.sol";
         vm.expectRevert("Booking not pending");
         booking.cancelBooking(1);
     }
-
 
     function testGetBookingReturnsCorrectDetails() public {
         vm.prank(TOURIST);

@@ -11,7 +11,6 @@ abstract contract CodeConstant {
 }
 
 contract HelperConfig is Script, CodeConstant {
-
     error HelperConfig__InvalidChainId();
 
     struct NetworkConfig {
@@ -26,14 +25,14 @@ contract HelperConfig is Script, CodeConstant {
         networkConfig[ZK_SEPOLIA_CHAIN_ID] = getZKsyncConfig();
     }
 
-    function getConfig() public view returns(NetworkConfig memory) {
+    function getConfig() public view returns (NetworkConfig memory) {
         return getConfigByChainId(block.chainid);
     }
 
     function getConfigByChainId(uint256 chainId) public view returns (NetworkConfig memory) {
-        if (networkConfig[chainId].contractOwner != address(0)){
+        if (networkConfig[chainId].contractOwner != address(0)) {
             return networkConfig[chainId];
-        } else if (chainId == LOCAL_CHAIN_ID){
+        } else if (chainId == LOCAL_CHAIN_ID) {
             return getLocalConfig();
         } else {
             revert HelperConfig__InvalidChainId();
@@ -46,23 +45,17 @@ contract HelperConfig is Script, CodeConstant {
 
 
     function getSepoliaConfig() public pure returns (NetworkConfig memory) {
-        return NetworkConfig({
-            contractOwner:0xF8C85DddaAfE76E46593Cc565011716A31192B97
-        });
+        return NetworkConfig({contractOwner: 0xF8C85DddaAfE76E46593Cc565011716A31192B97});
     }
 
 
     function getZKsyncConfig() public pure returns (NetworkConfig memory) {
-        return NetworkConfig({
-            contractOwner:0xF8C85DddaAfE76E46593Cc565011716A31192B97
-        });
+        return NetworkConfig({contractOwner: 0xF8C85DddaAfE76E46593Cc565011716A31192B97});
     }
 
 
     function getLocalConfig() public view returns (NetworkConfig memory) {
-        return NetworkConfig({
-            contractOwner:msg.sender
-        });
+        return NetworkConfig({contractOwner: msg.sender});
     }
 
 }

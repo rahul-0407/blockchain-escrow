@@ -27,7 +27,8 @@ contract TourismEscrow {
         require(msg.value > 0, "Payment must be > 0");
 
         bookingCount++;
-        bookings[bookingCount] = Booking({tourist: msg.sender, provider: _provider, amount: msg.value, status: Status.Pending});
+        bookings[bookingCount] = 
+            Booking({tourist: msg.sender, provider: _provider, amount: msg.value, status: Status.Pending});
 
         emit BookingCreated(bookingCount, msg.sender, _provider, msg.value);
         return bookingCount;
@@ -40,7 +41,7 @@ contract TourismEscrow {
 
         booking.status = Status.Delivered;
 
-        (bool success,) = payable(booking.provider).call{value:booking.amount}("");
+        (bool success,) = payable(booking.provider).call{value: booking.amount}("");
         require(success, "Payment failed");
 
         emit PaymentReleased(_bookingId, booking.provider, booking.amount);
@@ -54,7 +55,7 @@ contract TourismEscrow {
 
         booking.status = Status.Cancelled;
 
-        (bool success,) = payable(booking.tourist).call{value:booking.amount}("");
+        (bool success,) = payable(booking.tourist).call{value: booking.amount}("");
         require(success, "Payment failed");
 
         emit BookingCancelled(_bookingId, booking.tourist);
