@@ -8,37 +8,34 @@ abstract contract CodeConstant {
     uint256 public constant LOCAL_CHAIN_ID = 31337;
     uint256 public constant ETH_SEPOLIA_CHAIN_ID = 11155111;
     uint256 public constant ZK_SEPOLIA_CHAIN_ID = 300;
-
 }
 
-contract HelperConfig is Script, CodeConstant{
+contract HelperConfig is Script, CodeConstant {
 
     error HelperConfig__InvalidChainId();
 
-    struct NetworkConfig{
+    struct NetworkConfig {
         address contractOwner;
     }
 
     mapping(uint256 => NetworkConfig) public networkConfig;
 
-    constructor(){
+    constructor() {
         networkConfig[ETH_SEPOLIA_CHAIN_ID] = getSepoliaConfig();
         networkConfig[LOCAL_CHAIN_ID] = getLocalConfig();
         networkConfig[ZK_SEPOLIA_CHAIN_ID] = getZKsyncConfig();
     }
 
-    function getConfig() public view returns(NetworkConfig memory){
+    function getConfig() public view returns(NetworkConfig memory) {
         return getConfigByChainId(block.chainid);
     }
 
-    function getConfigByChainId(uint256 chainId) public view returns(NetworkConfig memory){
-        if(networkConfig[chainId].contractOwner != address(0)){
+    function getConfigByChainId(uint256 chainId) public view returns (NetworkConfig memory) {
+        if (networkConfig[chainId].contractOwner != address(0)){
             return networkConfig[chainId];
-        }
-        else if(chainId == LOCAL_CHAIN_ID){
+        } else if (chainId == LOCAL_CHAIN_ID){
             return getLocalConfig();
-        }
-        else{
+        } else {
             revert HelperConfig__InvalidChainId();
         }
     }
@@ -48,24 +45,24 @@ contract HelperConfig is Script, CodeConstant{
     }
 
 
-    function getSepoliaConfig() public pure returns(NetworkConfig memory){
+    function getSepoliaConfig() public pure returns (NetworkConfig memory) {
         return NetworkConfig({
             contractOwner:0xF8C85DddaAfE76E46593Cc565011716A31192B97
         });
     }
 
 
-    function getZKsyncConfig() public pure returns(NetworkConfig memory){
+    function getZKsyncConfig() public pure returns (NetworkConfig memory) {
         return NetworkConfig({
             contractOwner:0xF8C85DddaAfE76E46593Cc565011716A31192B97
         });
     }
 
 
-    function getLocalConfig() public view returns(NetworkConfig memory){
+    function getLocalConfig() public view returns (NetworkConfig memory) {
         return NetworkConfig({
             contractOwner:msg.sender
         });
     }
-    
+
 }
