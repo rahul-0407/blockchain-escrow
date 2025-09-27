@@ -67,12 +67,5 @@ contract HelperConfig is Script, CodeConstant{
             contractOwner:msg.sender
         });
     }
-
-    // function getLocalConfig() public view returns (NetworkConfig memory) {
-    //     return NetworkConfig({
-    //         contractOwner: msg.sender 
-    //     });
-    // }
-
-
+    
 }
