@@ -5,12 +5,7 @@ import "forge-std/Test.sol";
 import "../src/Booking.sol";
 
  contract BookingTest is Test {
-    event BookingCreated(
-        uint256 indexed bookingId,
-        address tourist,
-        address provider,
-        uint256 indexed amount
-    );
+    event BookingCreated(uint256 indexed bookingId, address tourist, address provider, uint256 indexed amount);
     event ServiceDelivered(uint256 indexed bookingId);
     event BookingCancelled(uint256 indexed bookingId, address refundedTo);
     event PaymentReleased(uint256 indexed bookingId, address to, uint256 amount);
@@ -29,8 +24,8 @@ import "../src/Booking.sol";
     function testCreateBookinngEmitEvent() public {
         vm.prank(TOURIST);
 
-        vm.expectEmit(true,true,false,true);
-        emit BookingCreated(1,TOURIST,PROVIDER, 1 ether);
+        vm.expectEmit(true, true, false, true);
+        emit BookingCreated(1, TOURIST, PROVIDER, 1 ether);
 
         booking.createBooking{value:1 ether}(PROVIDER);
 
@@ -39,7 +34,7 @@ import "../src/Booking.sol";
         assertEq(b.tourist, TOURIST);
         assertEq(b.provider, PROVIDER);
         assertEq(b.amount, 1 ether);
-        assertEq(uint(b.status), uint(TourismEscrow.Status.Pending));
+        assertEq(uint256(b.status), uint256(TourismEscrow.Status.Pending));
     }
 
     function testCreateBookingRevertsIfNoPayment() public {
@@ -54,13 +49,13 @@ import "../src/Booking.sol";
 
         uint providerBalanceBefore = PROVIDER.balance;
         vm.prank(PROVIDER);
-        vm.expectEmit(true,false,false,true);
+        vm.expectEmit(true, false, false, true);
         emit ServiceDelivered(1);
 
         booking.markDelivered(1);
 
         TourismEscrow.Booking memory b = booking.getBooking(1);
-        assertEq(uint(b.status), uint(TourismEscrow.Status.Delivered));
+        assertEq(uint256(b.status), uint256(TourismEscrow.Status.Delivered));
 
         assertEq(PROVIDER.balance, providerBalanceBefore + 1 ether);
 
@@ -72,13 +67,13 @@ import "../src/Booking.sol";
 
         uint providerBalanceBefore = PROVIDER.balance;
         vm.prank(PROVIDER);
-        vm.expectEmit(true,false,false,true);
+        vm.expectEmit(true, false, false, true);
         emit PaymentReleased(1, PROVIDER, 1 ether);
 
         booking.markDelivered(1);
 
         TourismEscrow.Booking memory b = booking.getBooking(1);
-        assertEq(uint(b.status), uint(TourismEscrow.Status.Delivered));
+        assertEq(uint256(b.status), uint256(TourismEscrow.Status.Delivered));
 
         assertEq(PROVIDER.balance, providerBalanceBefore + 1 ether);
 
@@ -121,7 +116,7 @@ import "../src/Booking.sol";
         booking.cancelBooking(1);
 
         TourismEscrow.Booking memory b = booking.getBooking(1);
-        assertEq(uint(b.status), uint(TourismEscrow.Status.Cancelled));
+        assertEq(uint256(b.status), uint256(TourismEscrow.Status.Cancelled));
 
         assertEq(TOURIST.balance, touristBalanceBefore + 1 ether);
     }
@@ -157,6 +152,6 @@ import "../src/Booking.sol";
         assertEq(b.tourist, TOURIST);
         assertEq(b.provider, PROVIDER);
         assertEq(b.amount, 2 ether);
-        assertEq(uint(b.status), uint(TourismEscrow.Status.Pending));
+        assertEq(uint256(b.status), uint256(TourismEscrow.Status.Pending));
     }
  }
