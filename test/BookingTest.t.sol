@@ -58,7 +58,6 @@ contract BookingTest is Test {
         assertEq(uint256(b.status), uint256(TourismEscrow.Status.Delivered));
 
         assertEq(PROVIDER.balance, providerBalanceBefore + 1 ether);
-
     }
 
     function testConfirmCompletionEmitEvent() public {
@@ -150,4 +149,4 @@ contract BookingTest is Test {
         assertEq(b.amount, 2 ether);
         assertEq(uint256(b.status), uint256(TourismEscrow.Status.Pending));
     }
- }
+}

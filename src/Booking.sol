@@ -27,7 +27,7 @@ contract TourismEscrow {
         require(msg.value > 0, "Payment must be > 0");
 
         bookingCount++;
-        bookings[bookingCount] = 
+        bookings[bookingCount] =
             Booking({tourist: msg.sender, provider: _provider, amount: msg.value, status: Status.Pending});
 
         emit BookingCreated(bookingCount, msg.sender, _provider, msg.value);

@@ -43,16 +43,13 @@ contract HelperConfig is Script, CodeConstant {
         return getConfig().contractOwner;
     }
 
-
     function getSepoliaConfig() public pure returns (NetworkConfig memory) {
         return NetworkConfig({contractOwner: 0xF8C85DddaAfE76E46593Cc565011716A31192B97});
     }
 
-
     function getZKsyncConfig() public pure returns (NetworkConfig memory) {
         return NetworkConfig({contractOwner: 0xF8C85DddaAfE76E46593Cc565011716A31192B97});
     }
-
 
     function getLocalConfig() public view returns (NetworkConfig memory) {
         return NetworkConfig({contractOwner: msg.sender});
