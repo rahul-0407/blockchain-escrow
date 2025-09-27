@@ -45,7 +45,7 @@ contract TourismEscrow {
 
     function markDelivered(uint256 _bookingId) external{
         Booking storage booking = bookings[_bookingId];
-        require(msg.sender==booking.provider,"Not authorised")
+        require(msg.sender==booking.provider,"Not authorised");
         require(booking.status == Status.Pending, "Booking not pending");
 
         booking.status = Status.Delivered;
@@ -59,7 +59,7 @@ contract TourismEscrow {
 
     function cancelBooking(uint256 _bookingId) external{
         Booking storage booking = bookings[_bookingId];
-        require(msg.sender==booking.tourist,"Not authorised")
+        require(msg.sender==booking.tourist,"Not authorised");
         require(booking.status == Status.Pending, "Booking not pending");
 
         booking.status = Status.Cancelled;
