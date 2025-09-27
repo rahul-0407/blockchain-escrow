@@ -25,7 +25,7 @@ contract TourismEscrow {
         uint256 indexed amount
     );
     event ServiceDelivered(uint256 indexed bookingId);
-    event BookingCancelled(uint256 bookingId, address refundedTo);
+    event BookingCancelled(uint256 indexed bookingId, address refundedTo);
     event PaymentReleased(uint256 bookingId, address to, uint256 amount);
 
     function createBooking(address _provider) external payable returns (uint256) {

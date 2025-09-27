@@ -12,8 +12,7 @@ import "../src/Booking.sol";
         uint256 indexed amount
     );
     event ServiceDelivered(uint256 indexed bookingId);
-    event BookingCompleted(uint256 indexed bookingId);
-    event BookingCancelled(uint256 indexed bookingId);
+    event BookingCancelled(uint256 indexed bookingId, address refundedTo);
 
     TourismEscrow booking;
 
@@ -90,24 +89,23 @@ import "../src/Booking.sol";
         booking.markDelivered(1);
     }
 
-//     // ------------------- CANCEL BOOKING -------------------
-//     // function testCancelBookingSuccess() public {
-//     //     vm.prank(TOURIST);
-//     //     booking.createBooking{value: 1 ether}(PROVIDER);
+    function testCancelBookingSuccess() public {
+        vm.prank(TOURIST);
+        booking.createBooking{value: 1 ether}(PROVIDER);
 
-//     //     uint256 touristBalanceBefore = TOURIST.balance;
+        uint256 touristBalanceBefore = TOURIST.balance;
 
-//     //     vm.prank(TOURIST);
-//     //     vm.expectEmit(true, false, false, true);
-//     //     emit BookingCancelled(1);
+        vm.prank(TOURIST);
+        vm.expectEmit(true, false, false, true);
+        emit BookingCancelled(1, TOURIST);
 
-//     //     booking.cancelBooking(1);
+        booking.cancelBooking(1);
 
-//     //     (, , , Booking.Status status) = booking.getBooking(1);
-//     //     assertEq(uint(status), uint(Booking.Status.Cancelled));
+        TourismEscrow.Booking memory b = booking.getBooking(1);
+        assertEq(uint(b.status), uint(TourismEscrow.Status.Cancelled));
 
-//     //     assertEq(TOURIST.balance, touristBalanceBefore + 1 ether);
-//     // }
+        assertEq(TOURIST.balance, touristBalanceBefore + 1 ether);
+    }
 
     function testCancelBookingRevertsIfNotTourist() public {
         vm.prank(TOURIST);
