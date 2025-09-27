@@ -1,7 +1,12 @@
 # Tourism Escrow Smart Contract
 
+🚀 **Deployed on zkSync Era!**  
+The Tourism Escrow System is now live on **zkSync Era**, enabling **faster, cheaper, and scalable transactions** for tourists and service providers.
+
+---
+
 ## Overview
-The **Tourism Escrow System** is a decentralized smart contract built to ensure **secure and transparent transactions** between tourists and service providers in the tourism sector.  
+The **Tourism Escrow System** is a decentralized smart contract built to ensure **secure and transparent transactions** between tourists and service providers in the tourism sector.
 
 It is primarily designed for:
 - Accommodation bookings (hotels, homestays, resorts)
@@ -24,7 +29,7 @@ However, the contract is written in a **general-purpose way**, meaning **any app
 This contract is EVM-compatible, so it can run on any chain that supports Solidity smart contracts, including:
 
 - **Ethereum** (Mainnet, Goerli, Sepolia)  
-- **zkSync Era**  
+- **zkSync Era** ✅  
 - **Polygon**  
 - **BNB Smart Chain (BSC)**  
 - **Arbitrum**  
@@ -77,6 +82,3 @@ npx hardhat compile
 
 # deploy
 npx hardhat run scripts/deploy.js --network sepolia
-
-
-
